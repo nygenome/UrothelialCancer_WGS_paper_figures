@@ -19,4 +19,6 @@ This repository contains the code necessary for reproducing the figures and cust
     * gUtils
     * rtracklayer
     * VariantAnnotation
+    * fishhook
+    * MutationTimeR
  

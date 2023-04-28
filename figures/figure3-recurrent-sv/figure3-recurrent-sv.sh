@@ -18,6 +18,18 @@
 set -euo pipefail
 SRCDIR=$(realpath $(dirname $0))
 
-## Figure 3A
 
-## Figure 3B
+## Figure 3A - FishHook manhattan plot 
+Rscript $SRCDIR/plt-fig3a-manhattan-plot.r \
+    --in_file=$FISHHOOK_HITS_ANNOTATED \
+    --fdr=0.25 \
+    --out_file=$SRCDIR/fig3a-manhattan-plot.svg
+
+
+## Figure 3B - JaBbA oncoprint for FishHook hits
+Rscript $SRCDIR/plt-fig3b-jabba-fishhook-oncoprint.r \
+    --jba_dir=$JABBA_DIR \
+    --tn_file=$TNFILE \
+    --bed=$FISHHOOK_HITS_ANNOTATED_BED \
+    --metadata=$METADATA \
+    --out_file=$SRCDIR/fig3b-jabba-fishhook-oncoprint.svg

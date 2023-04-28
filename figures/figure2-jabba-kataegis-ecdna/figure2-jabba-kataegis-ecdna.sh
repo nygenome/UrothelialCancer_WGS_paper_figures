@@ -26,7 +26,7 @@ Rscript $SRCDIR/plt-2a-junction-burden-heatmap.r \
     --metadata=$METADATA \
     --fga=$FGA \
     --tp53=$TP53_SOMATIC_STATUS \
-    --out_file=$SRCDIR/plt-2a-junction-burden-heatmap.svg
+    --out_file=$SRCDIR/fig2a-junction-burden-heatmap.svg
 
 
 ## Figure 2C - ecDNA/Kataegis co-localization barplot
@@ -35,7 +35,7 @@ Rscript $SRCDIR/plt-fig2c-ecdna-overlap-barplot.r \
     --in_dir_ktg=$KATAEGIS_DIR \
     --ktg_flag=vcf_hc_vaf \
     --tn_file=$TNFILE \
-    --out_file=$SRCDIR/plt-fig2c-ecdna-overlap-barplot.svg
+    --out_file=$SRCDIR/fig2c-ecdna-overlap-barplot.svg
 
 
 ## Figure 2D - Kataegis distance to nearest junction ECDF
@@ -43,7 +43,7 @@ Rscript $SRCDIR/plt-fig2d-distance-to-junction-ecdf.r \
     --in_dir_ktg=$KATAEGIS_DIR \
     --in_dir_nc=$NONCLUSTERED_DIR \
     --tn_file=$TNFILE \
-    --out_file=plt-fig2d-distance-to-junction-ecdf.svg
+    --out_file=$SRCDIR/fig2d-distance-to-junction-ecdf.svg
 
 
 ## Figure 2E - Kyklonas/chemo violin plots
@@ -51,14 +51,14 @@ Rscript $SRCDIR/plt-fig2e-plot-kyklonas-chemo-violin.r \
     --in_dir_ktg=$KATAEGIS_DIR \
     --in_dir_nc=$NONCLUSTERED_DIR \
     --tn_file=$TNFILE \
-    --out_file=plt-fig2e-plot-kyklonas-chemo-violin.svg
+    --out_file=$SRCDIR/fig2e-plot-kyklonas-chemo-violin.svg
 
 
 ## Figure 2F - ecDNA signatures barplot
 Rscript $SRCDIR/plt-fig2f-ecdna-sbs-barplot.r \
     --in_file=$ECDNA_SBS_BY_VAF \
     --metadata=$METADATA \
-    --out_file=plt-fig2f-ecdna-sbs-barplot.svg
+    --out_file=$SRCDIR/fig2f-ecdna-sbs-barplot.svg
 
 
 ## Figure 2G - ecDNA / kyklonas / non-clustered genomic view
@@ -68,4 +68,4 @@ Rscript $SRCDIR/plt-fig2g-ecdna-kataegis-gtracks.r \
     --ktg_flag=vcf_hc_vaf \
     --in_dir_nc=$NONCLUSTERED_DIR \
     --tn_file=$TNFILE \
-    --out_file=plt-fig2g-ecdna-kataegis-gtracks.pdf
+    --out_file=$SRCDIR/fig2g-ecdna-kataegis-gtracks.pdf

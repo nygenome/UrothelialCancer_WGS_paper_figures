@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="http://dagrejs.github.io/project/graphlib-dot/latest/graphlib-dot.min.js"></script>
+    <script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.min.js"></script>
+    <style>
+        #chart {
+            position: fixed;
+            left: 0px;
+            right: 0px;
+            top: 0px;
+            bottom: 0px;
+            z-index: -2;
+            height: 100%;
+        }
+        body {
+            font-family: sans-serif
+        }
+        div.tooltip {
+            position: absolute;
+            text-align: left;
+            left: 5%;
+            top: 5%;
+            width: 20%;
+            height: 15%;
+            padding: 2px;
+            border: 0px;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+        .node circle{
+            stroke: #fff;
+            stroke-width: 2px;
+            fill: #ffd699; 
+        }
+        .node rect {
+            stroke: #fff;
+            stroke-width: 2px;
+            fill: #ffc2c2; 
+            rx: 10;
+            ry: 10;
+        }
+        .edgeLabel rect {
+            fill: #fff;
+        }
+        .edgePath {
+            stroke: #8e8e8e;
+            stroke-width: 0px;
+            fill: none;
+        }
+        .label {
+            font-size: 12px
+        }
+        div.tooltip {
+            position: absolute;
+            text-align: left;
+            width: 150px;
+            height: auto;
+            padding-left: 10px;
+            padding-bottom: 10px;
+            font: 12px sans-serif;
+            border: 0.5px solid gray;
+            background: white;
+            border-radius: 5px;
+            pointer-events: none;
+            padding-top: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+    </style>
+  </head>
+  <body>
+    <div>
+        Filter Artifacts: <input type="checkbox" id="filterArtifacts">
+        <br>
+        Min Threshold: <input type="number" id="thresh" value=0 step=0.01>
+        <button id="clearAll">Toggle All</button>
+    </div>
+    <div id="chart">
+    </div>
+    <script>
+        var chartDiv = document.getElementById("chart");
+        var width = chartDiv.clientWidth -40;
+        var height = chartDiv.clientHeight -40;
+
+        var x = d3.scaleLinear().range([0,width]).domain([0,1000])
+        var y = d3.scaleLinear().range([0,height]).domain([0,1000])
+        var scale = d3.scaleLinear().range([0,width]).domain([0,1000])
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+		var filterArtifacts = d3.select('#filterArtifacts')
+		var render = new dagreD3.render();
+        var clearAll = d3.select('#clearAll')
+		
+		
+		var dotfile = 'data/lichee.dot'
+		var driverGeneFile = 'data/driverGenes.txt'
+		var SBSFile = 'data/SBS_Signatures.txt'
+		var DBSFile = 'data/DBS_Signatures.txt'
+		var IDFile = 'data/ID_Signatures.txt'
+		var ccfFile = 'data/ccfs.txt'
+
+        //var signatureColors = ['#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#ffff33','#a65628','#f781bf','#999999','#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854','#ffd92f','#e5c494','#b3b3b3','#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5','#ffed6f','#4e79a7','#f28e2c','#e15759','#76b7b2','#664040','#59a14f','#edc949','#af7aa1','#ff9da7','#b37654','#bab0ab','#1f77b4','#ff7f0e','#2ca02c','#a81d1d','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#664f40','#17becf','#666540','#446640','#40664e','#406660','#405966','#404a66','#464066','#574066','#664065','#664050','#664049','#732222','#737322','#407322','#22733d','#227368','#734822','#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666','#1b9e77','#d95f02','gray']
+        var signatureColors = ['#4daf4a','#377eb8','#999999','#984ea3','#1b7837','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#2166ac','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#e41a1c','#999999','#999999','#999999','#b2182b','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#762a83','#999999','#999999','#999999']
+        //var signatureColors_dbs = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','gray']
+        var signatureColors_dbs = ['#999999','#af8dc3','#999999','#999999','#ef8a62','#999999','#999999','#999999','#999999','#999999','#67a8cf','#999999']
+        //var signatureColors_id = ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5','#ffed6f','#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','gray']
+        var signatureColors_id = ['#999999','#999999','#e7d4e8','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999','#999999']
+        var signatureDesc = [
+            'Sponatneous deanimation of 5-methylcytosine (clock-like signature)',
+            'Activity of APOBEC family of cytidine deaminases',
+            'Defective homologous recombination DNA damage repair',
+            'Tobacco smoking',
+            'Unknown (clock-like signature)',
+            'Defective DNA mismatch repair',
+            'Ultraviolet light exposure',
+            'Ultraviolet light exposure',
+            'Ultraviolet light exposure',
+            'Ultraviolet light exposure',
+            'Unknown',
+            'Polymerase eta somatic hypermutation activity',
+            'Polymerase epsilon exonuclease domain mutations',
+            'Polymerase epsilon exonuclease domain mutations',
+            'Defective POLD proofreading',
+            'Defective POLD proofreading',
+            'Temozolomide treatment',
+            'Unknown',
+            'Activity of APOBEC family of cytidine deaminases',
+            'Concurrent polymerase epsilon mutation and defective DNA mismatch repair',
+            'Defective DNA mismatch repair',
+            'Unknown',
+            'Unknown',
+            'Unknown',
+            'Damage by reactive oxygen species',
+            'Unknown',
+            'Concurrent POLD1 mutations and defective DNA mismatch repair',
+            'Defective DNA mismatch repair',
+            'Aristolochic acid exposure',
+            'Unknown',
+            'Aflatoxin exposure',
+            'Chemotherapy treatment',
+            'Defective DNA mismatch repair',
+            'Possible sequencing artifact',
+            'Unknown',
+            'Tobacco chewing',
+            'Defective DNA base excision repair due to NTHL1 mutations',
+            'Platinum chemotherapy treatment',
+            'Azathioprine treatment',
+            'Unknown',
+            'Unknown',
+            'Platinum chemotherapy treatment',
+            'Defective DNA base excision repair due to MUTYH mutations',
+            'Unknown',
+            'Indirect effect of ultraviolet light',
+            'Unknown',
+            'Unknown',
+            'Unknown',
+            'Haloalkane exposure',
+            'Possible sequencing artifact',
+            'Defective DNA mismatch repair',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Possible sequencing artifact',
+            'Activity of activation-induced cytidine deminase (AID)',
+            'Indirect effects of activation-induced cytidine deaminase (AID)',
+            'Unknown chemotherapy treatment',
+            'Thiopurine chemotherapy treatment',
+            'Colibactin exposure (E.coli bacteria carrying pks pathogenicity island)',
+            'Unknown',
+            'Duocarmycin exposure',
+            'Unknown',
+            'Tobacco smoking',
+            'Unknown',
+            'Unknown',
+            'Other'
+        ]
+        var signatureDesc_id = [
+            'Slippage during DNA replication of the replicated DNA strand',
+            'Slippage during DNA replication of the replicated DNA strand',
+            'Tobacco smoking',
+            'Unknown',
+            'Unknown',
+            'Defective homologous recombination DNA damage repair',
+            'Defective DNA mismatch repair',
+            'Repair of DNA double strand breaks by NHEJ or mutations in TOP2A',
+            'Unknown',
+            'Unknown',
+            'Unknown',
+            'Unknown',
+            'UV light exposure',
+            'Unknown',
+            'Unknown',
+            'Unknown',
+            'Mutations in topoisomerase TOP2A',
+            'Colibactin exposure',
+            'Other'
+        ]
+        var signatureDesc_dbs = [
+            'UV light exposure',
+            'Tobacco smoking and other mutagens',
+            'Polymerase epsilon exonuclease domain mutations',
+            'Unknown',
+            'Platinum chemo treatment',
+            'Unknown',
+            'Defective DNA mismatch repair',
+            'Unknown',
+            'Unknown',
+            'Defective DNA mismatch repair',
+            'Unknown',
+            'Other'
+        ]
+        var signatures = ["SBS1","SBS2","SBS3","SBS4","SBS5","SBS6","SBS7a","SBS7b","SBS7c","SBS7d","SBS8","SBS9","SBS10a","SBS10b","SBS10c","SBS10d","SBS11","SBS12","SBS13","SBS14","SBS15","SBS16","SBS17a","SBS17b","SBS18","SBS19","SBS20","SBS21","SBS22","SBS23","SBS24","SBS25","SBS26","SBS27","SBS28","SBS29","SBS30","SBS31","SBS32","SBS33","SBS34","SBS35","SBS36","SBS37","SBS38","SBS39","SBS40","SBS41","SBS42","SBS43","SBS44","SBS45","SBS46","SBS47","SBS48","SBS49","SBS50","SBS51","SBS52","SBS53","SBS54","SBS55","SBS56","SBS57","SBS58","SBS59","SBS60","SBS84","SBS85","SBS86","SBS87","SBS88","SBS89","SBS90","SBS91","SBS92","SBS93","SBS94","Other_SBS"] 
+        var all_signatures = [...signatures]
+        var signatures_dbs = ["DBS1","DBS2","DBS3","DBS4","DBS5","DBS6","DBS7","DBS8","DBS9","DBS10","DBS11",'Other_DBS']
+        var all_signatures_dbs = [...signatures_dbs]
+        var signatures_id = ["ID1","ID2","ID3","ID4","ID5","ID6","ID7","ID8","ID9","ID10","ID11","ID12","ID13","ID14","ID15","ID16","ID17","ID18",'Other_ID'] 
+        var all_signatures_id = [...signatures_id]
+        var removedSignatures = []
+        var grayedSignatures = []
+
+        //var driverColors = ["darkpurple","darkorange","darkred","darkblue",'lightblue','teal','darkgreen','lime']
+        //var driverTypes = ['HIGH','MODERATE','AMP','HOMDEL','HETDEL','DEL','CHROMO','FUSION']
+        var driverColors = ['black']
+        var driverTypes = []
+
+        var colorScale = d3.scaleOrdinal().range(signatureColors.concat(signatureColors_dbs).concat(signatureColors_id)).domain(all_signatures.concat(all_signatures_dbs).concat(all_signatures_id))
+        var descScale = d3.scaleOrdinal().range(signatureDesc.concat(signatureDesc_dbs).concat(signatureDesc_id)).domain(all_signatures.concat(all_signatures_dbs).concat(all_signatures_id))
+
+        var driverScale = d3.scaleOrdinal().range(driverColors).domain(driverTypes)
+
+        d3.text(dotfile).then(function(data){
+            customPaths = svg.append('g').attr('class','customPaths')
+            dagre = svg.append('g').attr('class','dagre')
+            
+            data = data.replace(/width=1920 height=1080/g,"") //remove lichee's incorrect width and height attribute
+            data = data.replace(/shape=([\S]+)/g,"") //remove lichee's incorrect shape attribute
+            //console.log(data)
+            var graph = graphlibDot.read(data)
+            graph.graph().rankdir="LR"
+            graph.graph().ranksep="100"
+            graph.graph().nodesep="100"
+            graph.graph().marginy="120"
+            //how to rank tree: allows 'network-simplex' ,'tight-tree', 'longest-path'
+            graph.graph().ranker="tight-tree"
+            
+            graph.nodes().forEach(function(v) {
+                var node = graph.node(v);
+                //console.log(node)
+                if(!isNaN(node.label)){
+                    node.shape = "circle"
+                    node.height = Math.cbrt(node.label)*2
+                    node.id = v
+                    //console.log(node.height)
+                }
+                else {
+                    node.shape = "rect"
+                    node.height = 30
+                }
+            });
+            
+            console.log(graph._edgeLabels)
+            
+            for (i in graph._edgeLabels) {
+                graph._edgeLabels[i].curve = d3.curveBasis
+                //graph._edgeLabels[i].arrowhead = "customPath"
+            }
+            
+            render(d3.select(".dagre"), graph);
+            svg.attr("height", function(){
+                if (graph.graph().height + 100 > 900){
+                    return graph.graph().height + 100
+                }
+                else {
+                    return 1000
+                }
+            })
+            svg.attr("width",graph.graph().width + 500)
+            //console.log(graph)
+            var nodes = graph._nodes
+            var legend = svg.append('g').attr('class','legend').attr('transform','translate(' + (graph.graph().width + 150) + ',0)')
+
+            d3.selectAll(".label-container")
+                .attr('r',function(d){	
+                    if(this.parentElement.id){
+                        //console.log(nodes[this.parentElement.id])
+                        return Math.cbrt(nodes[this.parentElement.id].label)*2
+                    }
+                    else{
+                        return 5
+                    }
+                    
+                })
+            
+            d3.selectAll('.node')
+                .append('text')
+                .attr('id', function(){
+                    return "genes_" + this.parentElement.id 
+                })
+                .attr('transform',function(){
+                    if(this.parentElement.id){
+                        //console.log(nodes[this.parentElement.id])
+                        return 'translate(' + (Math.cbrt(nodes[this.parentElement.id].label)*2 + 50) + ",0)"
+                    }
+                    return 'translate(0,0)'
+                })
+            
+            //attach parents to node data structure
+            for(i in nodes){
+                nodes[i].parents = Object.keys(graph._preds[i])
+            }
+            
+            for(i in nodes){
+                var d = nodes[i]
+                if(d.parents.length > 0){
+                    var link = customPaths.append('g')
+                    for(j in d.parents){
+                        var parent_id = d.parents[j]
+                        var paths = link.append("path")
+                            .attr("class", "link")
+                            .attr("d", function() {
+                                if(!isNaN(d.label)){
+                                    nodeSize = Math.cbrt(d.label)*2
+                                }
+                                else{
+                                    nodeSize = 5
+                                }
+                                if(!isNaN(nodes[parent_id].label)){
+                                    parent_nodeSize = Math.cbrt(nodes[parent_id].label)*2
+                                }
+                                else{
+                                    parent_nodeSize = 5
+                                }
+
+                                adjustY = d.y + nodeSize
+                                adjustParentY = nodes[parent_id].y + parent_nodeSize
+                                adjustY2 = d.y - nodeSize
+                                adjustParentY2 = nodes[parent_id].y - parent_nodeSize
+
+                                return "M" + (d.x) + "," + (adjustY)
+                                        + "C" + (d.x + nodes[parent_id].x) / 2 + "," + adjustY
+                                        + " " + (d.x + nodes[parent_id].x) / 2 + "," + adjustParentY
+                                        + " " + nodes[parent_id].x + "," + adjustParentY
+                                        + " L" + nodes[parent_id].x + "," + adjustParentY2
+                                        + " C" + (d.x + nodes[parent_id].x) / 2 + "," + adjustParentY2
+                                        + " " + (d.x + nodes[parent_id].x) / 2 + "," + adjustY2
+                                        + " " + d.x + "," + adjustY2
+
+                            })
+                            .attr('fill','#cce6ff')
+                            .attr('stroke','#cce6ff')
+                            .attr('stroke-width',2)
+                            //.attr('opacity',0.7)
+                    }
+                }
+                
+            }
+            var pie = d3.pie()
+                .value(function(d){
+                    if(d.key != 'Sample'){
+                        return d.value
+                    }
+                })
+                .sort(function(a,b){
+                    if(!removedSignatures.includes(a.key) && removedSignatures.includes(b.key)){
+                        return -1
+                    }
+                    if(!removedSignatures.includes(a.key) && removedSignatures.includes(b.key)){
+                        return -1
+                    }
+                    else if(removedSignatures.includes(a.key) && !removedSignatures.includes(b.key)){
+                        return 1
+                    }
+                    else{
+                        return 0
+                    }
+                })
+
+            function drawSignatures(signature, radiusOffset, width){
+                sig_pie = pie(d3.entries(signature))
+                //console.log(sig_pie[0].data.value)
+                var sig_donut = d3.select('[id="' + sig_pie[0].data.value + '"]')
+                    .append('g')
+                    .attr('class','donut')
+                    
+                sig_donut.selectAll()
+                    .data(sig_pie)
+                    .enter()
+                    .append('path')
+                    .attr('class', function(d){return d.data.key})
+                    .attr('id', function(d){return  d.data.key+ "-" + signature.Sample})
+                    .attr('d', function(d){
+                        donutRadius = Math.cbrt(nodes[sig_pie[0].data.value].label)*2
+                        return d3.arc()
+                            .innerRadius(donutRadius + radiusOffset)
+                            .outerRadius(donutRadius + radiusOffset + width)(d)
+                    })
+                    .attr('fill', function(d){
+                        return colorScale(d.data.key)
+                    })
+                    .attr('stroke','white')
+                    .attr('stroke-width', "0.5px")
+                    .on('mouseover', function(d){
+                        var num = parseFloat(d.data.value)
+                        div.html(
+                            "<b>" + d.data.key + "</b>: " + num.toFixed(4) + '<br>' +
+                            descScale(d.data.key)
+                        )
+                        div.style("left", (d3.event.pageX + 10) + "px")
+                        div.style("top", (d3.event.pageY + 15) + "px")
+                        div.style('opacity','0.9')
+                        div.style('background', 'gray')
+                        d3.select(this)
+                            .attr('stroke','black')
+                            .attr('stroke-width', '1px')
+                    })
+                    .on('mouseout', function(){
+                        d3.select(this)
+                            .attr('stroke','white')
+                        div.style('opacity','0')
+                    })
+            }
+        
+            var SBSdata
+            var DBSdata
+            var IDdata
+
+            var adjustThresh = d3.select('#thresh')
+            
+            adjustThresh.on('change', function(){
+                data = JSON.parse(JSON.stringify(SBSdata));
+                data_dbs = JSON.parse(JSON.stringify(DBSdata));
+                data_id = JSON.parse(JSON.stringify(IDdata));
+                var excludedSigs = ['SBS2','SBS13','DBS11','SBS4','SBS92','DBS2','SBS31','SBS35','DBS5']
+                console.log(data)
+                for(i in data){
+                    data[i].Other_SBS = 0
+                    for(j in data[i]){
+                        if(j != 'Sample' && j != 'Other_SBS' && !excludedSigs.includes(j)){
+                            if(data[i][j] < adjustThresh.property("value")){
+                                data[i].Other_SBS = data[i].Other_SBS + parseFloat(data[i][j])
+                                data[i][j]=0
+                            }
+                        }
+                    }
+                }
+                for(i in data_dbs){
+                    data_dbs[i].Other_DBS = 0
+                    for(j in data_dbs[i]){
+                        if(j != 'Sample' && j != 'Other_DBS' && !excludedSigs.includes(j)){
+                            if(data_dbs[i][j] < adjustThresh.property("value")){
+                                data_dbs[i].Other_DBS = data_dbs[i].Other_DBS + parseFloat(data_dbs[i][j])
+                                data_dbs[i][j]=0
+                            }
+                        }
+                    }
+                }
+                for(i in data_id){
+                    data_id[i].Other_ID = 0
+                    for(j in data_id[i]){
+                        if(j != 'Sample' && j != 'Other_ID' && !excludedSigs.includes(j)){
+                            if(data_id[i][j] < adjustThresh.property("value")){
+                                data_id[i].Other_ID = data_id[i].Other_ID + parseFloat(data_id[i][j])
+                                data_id[i][j]=0
+                            }
+                        }
+                    }
+                }
+                svg.selectAll('.donut').remove()
+                for(i in data){
+                    drawSignatures(data[i],31,14)
+                }
+                for(i in data_dbs){
+                    drawSignatures(data_dbs[i],16,14)
+                }
+                for(i in data_id){
+                    drawSignatures(data_id[i],1,14)
+                }
+                removedSignatures.push('Other_SBS')
+                removedSignatures.push('Other_DBS')
+                removedSignatures.push('Other_ID')
+                for(i in removedSignatures){
+                    d3.selectAll('.' + removedSignatures[i])
+                        .attr('fill','#999999')
+                        .attr('stroke','none')
+                }
+            })
+
+            function removeSignatures(sigsToRemove){
+                console.log(sigsToRemove)
+                for(j in sigsToRemove){
+                    if(!removedSignatures.includes(sigsToRemove[j])){
+                        removedSignatures = removedSignatures.concat(sigsToRemove[j])
+                        document.getElementById(sigsToRemove[j]+'text').style.fill = 'lightgray'
+                    }
+                    else{
+                        removedSignatures.splice(removedSignatures.indexOf(sigsToRemove[j]),1)
+                        document.getElementById(sigsToRemove[j]+'text').style.fill = 'black'
+                    }
+                }
+                svg.selectAll('.donut').remove()
+                for(i in SBSdata){
+                    drawSignatures(SBSdata[i],31,14)
+                }
+                for(i in DBSdata){
+                    drawSignatures(DBSdata[i],16,14)
+                }
+                for(i in IDdata){
+                    drawSignatures(IDdata[i],1,14)
+                }
+                removedSignatures.push('Other_SBS')
+                removedSignatures.push('Other_DBS')
+                removedSignatures.push('Other_ID')
+                for(i in removedSignatures){
+                    d3.selectAll('.' + removedSignatures[i])
+                        .attr('fill','#999999')
+                        .attr('stroke', 'none')
+                }
+                
+            }
+
+            d3.tsv(SBSFile).then(function(signatures){
+                SBSdata = signatures
+                for(i in signatures){
+                    drawSignatures(signatures[i], 31, 14)
+                }
+
+                filterArtifacts.on('click', function(d){
+                    artifactSignatures = ['SBS27','SBS43','SBS45','SBS46','SBS47','SBS48','SBS49','SBS50','SBS51','SBS52','SBS53','SBS54','SBS55','SBS56','SBS57','SBS58','SBS59','SBS60']
+                    removeSignatures(artifactSignatures)
+                })
+                clearAll.on('click', function(d){
+                    removeSignatures(all_signatures.concat(all_signatures_dbs).concat(all_signatures_id))
+                })
+                for(i in all_signatures){
+                    legend.append('rect')
+                        .attr('x', -100)
+                        .attr('y', i*12)
+                        .attr('fill', function(d){
+                            return colorScale(all_signatures[i])
+                        })
+                        .attr('height',10)
+                        .attr('width',10)
+                        .attr('id', all_signatures[i] + 'rect')
+                        .on('mouseover', function(){
+                            div.html(
+                                "<b>" + (this.id).slice(0,-4) + "</b>: <br>"+
+                                descScale(this.id.slice(0,-4)) + "<br><br> (click to hide)"
+                            )
+                            div.style("left", (d3.event.pageX + 10) + "px")
+                            div.style("top", (d3.event.pageY + 15) + "px")	
+                            div.style('opacity','0.9')
+                            div.style('background', 'gray')
+                            d3.select(this)
+                                .attr('stroke','black')
+                                .attr('stroke-width', '2px')
+                        })
+                        .on('mouseout', function(){
+                            d3.select(this)
+                                .attr('stroke','none')
+                            div.style('opacity','0')
+                        })
+                        .on('click', function(){
+                            removeSignatures([this.id.slice(0,-4)])
+                        })
+
+                    legend.append('text')
+                        .attr('x', -90)
+                        .attr('y', i*12)
+                        .attr('id', all_signatures[i] + 'text')
+                        .text(all_signatures[i])
+                        .attr('fill','black')
+                        .attr('dy',"10px")
+                        .style('font-size', "12px")
+                }
+            })
+
+            d3.tsv(DBSFile).then(function(signatures){
+                DBSdata = signatures
+                for(i in signatures){
+                    drawSignatures(signatures[i],16,14)
+                }
+
+                filterArtifacts.on('click', function(d){
+                    artifactSignatures = ['SBS27','SBS43','SBS45','SBS46','SBS47','SBS48','SBS49','SBS50','SBS51','SBS52','SBS53','SBS54','SBS55','SBS56','SBS57','SBS58','SBS59','SBS60']
+                    removeSignatures(artifactSignatures)
+                })
+                for(i in all_signatures_dbs){
+                    legend.append('rect')
+                        .attr('x', 0)
+                        .attr('y', i*12)
+                        .attr('fill', function(d){
+                            return colorScale(all_signatures_dbs[i])
+                        })
+                        .attr('height',10)
+                        .attr('width',10)
+                        .attr('id', all_signatures_dbs[i] + 'rect')
+                        .on('mouseover', function(){
+                            div.html(
+                                "<b>" + (this.id).slice(0,-4) + "</b>: <br>"+
+                                descScale(this.id.slice(0,-4)) + "<br><br> (click to hide)"
+                            )
+                            div.style("left", (d3.event.pageX + 10) + "px")
+                            div.style("top", (d3.event.pageY + 15) + "px")	
+                            div.style('opacity','0.9')
+                            div.style('background', 'gray')
+                            d3.select(this)
+                                .attr('stroke','black')
+                                .attr('stroke-width', '2px')
+                        })
+                        .on('mouseout', function(){
+                            d3.select(this)
+                                .attr('stroke','none')
+                            div.style('opacity','0')
+                        })
+                        .on('click', function(){
+                            removeSignatures([this.id.slice(0,-4)])
+                        })
+
+                    legend.append('text')
+                        .attr('x', 10)
+                        .attr('y', i*12)
+                        .attr('id', all_signatures_dbs[i] + 'text')
+                        .text(all_signatures_dbs[i])
+                        .attr('fill','black')
+                        .attr('dy',"10px")
+                        .style('font-size', "12px")
+                }
+                })
+            d3.tsv(IDFile).then(function(signatures){
+                IDdata = signatures
+                for(i in signatures){
+                    drawSignatures(signatures[i],1,14)
+                }
+
+                filterArtifacts.on('click', function(d){
+                    artifactSignatures = ['SBS27','SBS43','SBS45','SBS46','SBS47','SBS48','SBS49','SBS50','SBS51','SBS52','SBS53','SBS54','SBS55','SBS56','SBS57','SBS58','SBS59','SBS60']
+                    removeSignatures(artifactSignatures)
+                })
+                for(i in all_signatures_id){
+                    legend.append('rect')
+                        .attr('x', 100)
+                        .attr('y', i*12)
+                        .attr('fill', function(d){
+                            return colorScale(all_signatures_id[i])
+                        })
+                        .attr('height',10)
+                        .attr('width',10)
+                        .attr('id', all_signatures_id[i] + 'rect')
+                        .on('mouseover', function(){
+                            div.html(
+                                "<b>" + (this.id).slice(0,-4) + "</b>: <br>"+
+                                descScale(this.id.slice(0,-4)) + "<br><br> (click to hide)"
+                            )
+                            div.style("left", (d3.event.pageX + 10) + "px")
+                            div.style("top", (d3.event.pageY + 15) + "px")	
+                            div.style('opacity','0.9')
+                            div.style('background', 'gray')
+                            d3.select(this)
+                                .attr('stroke','black')
+                                .attr('stroke-width', '2px')
+                        })
+                        .on('mouseout', function(){
+                            d3.select(this)
+                                .attr('stroke','none')
+                            div.style('opacity','0')
+                        })
+                        .on('click', function(){
+                            removeSignatures([this.id.slice(0,-4)])
+                        })
+
+                    legend.append('text')
+                        .attr('x', 110)
+                        .attr('y', i*12)
+                        .attr('id', all_signatures_id[i] + 'text')
+                        .text(all_signatures_id[i])
+                        .attr('fill','black')
+                        .attr('dy',"10px")
+                        .style('font-size', "12px")
+                }
+                })
+
+            d3.text(ccfFile).then(function(ccf){
+                var headers = ["node_id","ccf"].join("\t");
+                var nodeCCF = d3.tsvParse(headers + "\n" + ccf)
+                console.log(nodeCCF)
+                for(i in nodeCCF){
+                    //var annot_node = graph.node(driverGenes[i].node_id)
+                    d3.select('#genes_' + nodeCCF[i].node_id)
+                        .append('tspan')
+                        .attr('text-anchor','start')
+                        .attr('dy','1em')
+                        .attr('x','3')
+                        .attr('font-size',10)
+                        .attr('fill', 'blue')
+                        .text(function(d){
+                            //console.log(nodeCCF[i].ccf)
+                            return nodeCCF[i].ccf
+                        })
+                }
+            })
+            d3.text(driverGeneFile).then(function(annot){
+                var headers = ["gene","node_id","prevalence"].join("\t");
+                var driverGenes = d3.tsvParse(headers + "\n" + annot)
+                for(i in driverGenes){
+                    var annot_node = graph.node(driverGenes[i].node_id)
+                    d3.select('#genes_' + driverGenes[i].node_id)
+                        .append('tspan')
+                        .attr('text-anchor','start')
+                        .attr('dy','1em')
+                        .attr('x','3')
+                        .attr('font-size',10)
+                        .attr('fill', function(d){
+                            driverType = driverGenes[i].gene.split('|')[0]
+                            return driverScale(driverType)
+                        })
+                        .text(function(d){
+                            return driverGenes[i].gene.split('|')[1]
+                        })
+                }
+
+                for(i in driverTypes){
+                    legend.append('rect')
+                        .attr('x', -20)
+                        .attr('y', i*12)
+                        .attr('fill', function(d){
+                            return driverScale(all_signatures[i])
+                        })
+                        .attr('height',10)
+                        .attr('width',10)
+
+                    legend.append('text')
+                        .attr('x', -10)
+                        .attr('y', i*12)
+                        .text(driverTypes[i])
+                        .attr('fill','black')
+                        .attr('dy',"10px")
+                        .style('font-size', "12px")
+                }
+            })
+            
+        })
+    </script>
+  </body>
+</html>

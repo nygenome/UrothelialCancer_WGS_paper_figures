@@ -21,7 +21,7 @@ SRCDIR=$(realpath $(dirname $0))
 
 
 ## Figure 1A - Phylogenetic tree
-## TODO: Tim will fill this in
+xdg-open plt-fig1a-signature-tree.html
 
 
 ## Figure 1B - Signature clonality/timing fold change boxplot
@@ -34,15 +34,15 @@ Rscript $SRCDIR/plt-fig1b-signature-clonality-bxp.r \
 
 
 ## Figure 1C - Mutations per month of exposure boxplot
-## TODO: Tim will fill this in
+Rscript $SRCDIR/plt-fig1c-signature-accumulation.R
 
 
 ## Figure 1D - Normal urothelium alluvial plot 1
-## TODO: Tim will fill this in
+Rscript $SRCDIR/plt-fig1de-barplot.R
 
 
 ## Figure 1E - Normal urothelium alluvial plot 2
-## TODO: Tim will fill this in
+Rscript $SRCDIR/plt-fig1de-barplot.R
 
 
 ## Figure 1F - dN/dS clonal selection scatter plot

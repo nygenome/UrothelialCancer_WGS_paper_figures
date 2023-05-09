@@ -21,7 +21,7 @@ SRCDIR=$(realpath $(dirname $0))
 
 
 ## Figure 1A - Phylogenetic tree
-xdg-open plt-fig1a-signature-tree.html
+xdg-open $SRCDIR/plt-fig1a-signature-tree.html
 
 
 ## Figure 1B - Signature clonality/timing fold change boxplot
@@ -33,16 +33,18 @@ Rscript $SRCDIR/plt-fig1b-signature-clonality-bxp.r \
     --out_file=$SRCDIR/fig1b-signature-clonality-bxp.pdf
 
 
-## Figure 1C - Mutations per month of exposure boxplot
-Rscript $SRCDIR/plt-fig1c-signature-accumulation.R
+## Figure 1C - Mutations per month of exposure boxplot 
+## output to plotly interactive plot, export from there
+Rscript $SRCDIR/plt-fig1c-signature-accumulation.r \
+    --sbs=$SBS \
+    --dbs=$DBS \
+    --metadata=$METADATA
 
 
-## Figure 1D - Normal urothelium alluvial plot 1
-Rscript $SRCDIR/plt-fig1de-barplot.R
-
-
-## Figure 1E - Normal urothelium alluvial plot 2
-Rscript $SRCDIR/plt-fig1de-barplot.R
+## Figure 1D/E - Normal urothelium alluvial plot 1
+Rscript $SRCDIR/plt-fig1de-barplot.r \
+    --in_file=urothelium_counts.txt \
+    --out_file=$SRCDIR/fig1de-barplot.svg
 
 
 ## Figure 1F - dN/dS clonal selection scatter plot
@@ -52,5 +54,4 @@ Rscript $SRCDIR/plt-fig1f-dnds-gene-scatter.r \
     --in_dir_sig=$SIGNATURE_ASSIGNMENT_DIR \
     --in_dir_union=$UNION_VARIANT_DIR \
     --in_dir_singleton=$SINGLETON_DIR \
-    --out_file=$SRCDIR/fig1f-dnds-gene-scatter.r
-
+    --out_file=$SRCDIR/fig1f-dnds-gene-scatter.svg

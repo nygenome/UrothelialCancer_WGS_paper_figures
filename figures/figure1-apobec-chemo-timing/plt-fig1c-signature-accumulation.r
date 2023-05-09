@@ -1,9 +1,39 @@
-library(plotly)
-library(reshape2)
-metadata = read.table('cornell-bladder-metadata-final.txt',header=TRUE,as.is=TRUE,sep='\t',fill=T)
+#!/nfs/sw/R/R-4.0.0/bin/Rscript
+################################################################################
+### COPYRIGHT ##################################################################
 
-sbs_data = read.table('sbs96.HighConf.cosmicv3.2.benign.counts.txt',header=TRUE, as.is=TRUE, sep="\t")
-dbs_data = read.table('dbs78.HighConf.cosmicv3.2.benign.counts.txt',header=TRUE, as.is=TRUE, sep="\t")
+# New York Genome Center
+
+# SOFTWARE COPYRIGHT NOTICE AGREEMENT
+# This software and its documentation are copyright (2023) by the New York
+# Genome Center. All rights are reserved. This software is supplied without
+# any warranty or guaranteed support whatsoever. The New York Genome Center
+# cannot be responsible for its use, misuse, or functionality.
+
+# Author: Timothy R. Chu
+
+################################################################# /COPYRIGHT ###
+################################################################################
+## Plot signature accumulation boxplot
+
+libs = c('optparse', 'plotly', 'reshape2')
+invisible(suppressPackageStartupMessages(sapply(libs, require, character.only=T)))
+options(width=200, scipen=999)
+
+
+
+## Get arguments
+option_list = list(
+  make_option(c("-i", "--sbs"),      type='character', help="COSMIC SBS v3.2 results"),
+  make_option(c("-t", "--dbs"),      type='character', help="COSMIC DBS v3.2 results"),
+  make_option(c("-m", "--metadata"), type='character', help="Sample metadata"))
+opt = parse_args(OptionParser(option_list=option_list))
+
+
+
+metadata = read.table(opt$metadata,header=TRUE,as.is=TRUE,sep='\t',fill=T)
+sbs_data = read.table(opt$sbs,header=TRUE, as.is=TRUE, sep="\t")
+dbs_data = read.table(opt$dbs,header=TRUE, as.is=TRUE, sep="\t")
 
 postchemo = sbs_data[sbs_data$Sample %in% metadata[metadata$platinum_chemotherapy == 'Post-chemo',]$tumor,]
 postchemo = merge(postchemo[,c('Sample','SBS31','SBS35')],metadata[,c('tumor','patient','months_from_chemo_start_to_sample_collection')], by.x='Sample',by.y='tumor')

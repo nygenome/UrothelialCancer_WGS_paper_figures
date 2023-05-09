@@ -21,4 +21,5 @@ This repository contains the code necessary for reproducing the figures and cust
     * VariantAnnotation
     * fishhook
     * MutationTimeR
+    * plotly
  

@@ -33,3 +33,4 @@ Rscript $SRCDIR/plt-fig3b-jabba-fishhook-oncoprint.r \
     --bed=$FISHHOOK_HITS_ANNOTATED_BED \
     --metadata=$METADATA \
     --out_file=$SRCDIR/fig3b-jabba-fishhook-oncoprint.svg
+    

@@ -21,6 +21,9 @@ SRCDIR=$(realpath $(dirname $0))
 
 ## Figure 4A - Comparison with TCGA data 
 ## TODO: Get code from Bishoy's team
+Rscript $SRCDIR/plt-fig4a-ccnd1-tcga-barplot.r \
+    --in_file=$TCGA_PAN_CANCER_CCND1_STATS \
+    --out_file=$SRCDIR/fig4a-ccnd1-tcga-barplot.svg
 
 
 ## Figure 4B - CNV heatmap
@@ -88,3 +91,4 @@ Rscript $SRCDIR/plt-fig4-ccnd1-gtrack.r \
     --aa=$AADIR/$tn.amplicons.10kb_4X_downsample10.bed \
     --padding=5E6 \
     --out_file=fig4g-ccnd1-gtrack.svg
+    

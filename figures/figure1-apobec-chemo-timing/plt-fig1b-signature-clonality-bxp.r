@@ -258,11 +258,11 @@ message(opt$out_file)
 
 ## Plot individual SVGs for inclusion in manuscript figures 
 svg(gsub('\\.pdf$', '.chemo.early_late.svg', opt$out_file), width=5, height=6)
-chemo.early.late + geom_hline(yintercept=c(1.260497,            1.853065     ,             0.4799825))
+chemo.early.late
 dev.off()
 
 svg(gsub('\\.pdf$', '.chemo.clonal_subclonal.svg', opt$out_file), width=5, height=6)
-chemo.clonal.subclonal + geom_hline(yintercept=c(1.201243,            1.490793,                 0.7979059))
+chemo.clonal.subclonal
 dev.off()
 
 svg(gsub('\\.pdf$', '.prechemo.early_late.svg', opt$out_file), width=10, height=6)

@@ -6,7 +6,7 @@ This repository contains the code necessary for reproducing the figures and cust
 
 ## Dependencies
 * R 4.0.0 or greater
-* The following R packages 
+* The following R packages (*NOTE*: not all of these are required for every component. Please see scripts for individual dependencies)
     * optparse
     * ComplexHeatmap
     * circlize
@@ -23,4 +23,18 @@ This repository contains the code necessary for reproducing the figures and cust
     * fishhook
     * MutationTimeR
     * plotly
+    * deconstructSigs
+    * JaBbA
+    * parallel
+    * Matrix
+    * stringr
+    * dryclean
+    * magrittr
+    * GenomicRanges
+    * skitools
+    * bamUtils
+
+* The following packages
+    * bedtools
+    * samtools
  

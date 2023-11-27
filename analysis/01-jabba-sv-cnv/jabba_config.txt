@@ -1,0 +1,14 @@
+project_directory	/gpfs/commons/groups/compbio/projects/Project_Cornell_Collaboration_Bladder_Cancer/Project_KIM_14248_B01_SOM_WGS
+output_directory	/gpfs/commons/groups/compbio/projects/Project_Cornell_Collaboration_Bladder_Cancer/Project_KIM_14248_B01_SOM_WGS/compbio/jabba
+tumor_normal_pairs	/gpfs/commons/groups/compbio/projects/Project_Cornell_Collaboration_Bladder_Cancer/Project_KIM_14248_B01_SOM_WGS/compbio/metadata/tumor_normal_pairs.jabbarerun.txt
+genome	/gpfs/commons/resources/GRCh38_full_analysis_set_plus_decoy_hla/internal/GRCh38_full_analysis_set_plus_decoy_hla.cleaned.fasta
+mappability	/gpfs/commons/resources/GRCh38_full_analysis_set_plus_decoy_hla/internal/Mappability/151bp/GRCh38_full_analysis_set_plus_decoy_hla_151bp.bedGraph
+blacklist	/gpfs/commons/groups/compbio/whooper/jabba_wrapper/GRCh38-centromere-blacklist.bed
+gencode /gpfs/commons/groups/compbio/whooper/jabba_wrapper/gencode.v33.annotation.gtf.gz
+gene_bed /gpfs/commons/resources/GRCh38_full_analysis_set_plus_decoy_hla/internal/ensembl_genes_unique_sorted.final.v93.short.chr.sorted.bed
+purity_ploidy	/gpfs/commons/groups/compbio/projects/Project_Cornell_Collaboration_Bladder_Cancer/Project_KIM_14248_B01_SOM_WGS/compbio/metadata/purity_ploidy_final.txt
+coverage dryclean
+cores	16
+binsize	1000
+use_tiers false
+additional_args:--slack=1000

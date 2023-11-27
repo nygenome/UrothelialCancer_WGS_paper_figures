@@ -89,5 +89,4 @@ while read tumor normal gender; do
                 --genes=$GENE_BED \
                 --out_file=$out_file
 
-  
 done < $TNFILE

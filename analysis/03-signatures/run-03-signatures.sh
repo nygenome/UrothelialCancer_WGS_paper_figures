@@ -70,12 +70,12 @@ while read tumor normal gender patient; do
                 --out_file=$out_vcf
 
     Rscript $SRCDIR/filter-signatures.r \
-            --in_file=$out_vcf \
-            --sbs_ref=$SBS_REF \
-            --sbs_31_35_filter=$SBS31_35_FILTER_LIST \
-            --metadata=$METADATA \
-            --tumor_id=$tumor \
-            --out_file=$out_vcf_filtered
+                --in_file=$out_vcf \
+                --sbs_ref=$SBS_REF \
+                --sbs_31_35_filter=$SBS31_35_FILTER_LIST \
+                --metadata=$METADATA \
+                --tumor_id=$tumor \
+                --out_file=$out_vcf_filtered
   
 done < $TNFILE
 
@@ -121,9 +121,9 @@ done < <(grep -v '^#' $TNFILE | cut -f4 | sort -u)
   vcf=$SIG_ASSIGN_DIR/$tn.mutationtimer-snv.withSigProbs.filtered.vcf
   
   Rscript $SRCDIR/vcf-to-counts.r \
-        --in_file=$vcf \
-        --sbs_ref=$SBS_REF \
-        --out_file=$SIG_ASSIGN_DIR/counts/$tn-signature-clonality-counts.csv
+            --in_file=$vcf \
+            --sbs_ref=$SBS_REF \
+            --out_file=$SIG_ASSIGN_DIR/counts/$tn-signature-clonality-counts.csv
   
 done < $TNFILE
 

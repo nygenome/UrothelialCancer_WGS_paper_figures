@@ -71,11 +71,11 @@ done < $TNFILE
 
 ## Run dNdScv
 Rscript $SRCDIR/run-dndscv.r \
-  --in_file=$MUTATIONS \
-  --metadata=$METADATA \
-  --ref=$DNDSCV_REF \
-  --cov=$DNDSCV_COV \
-  --out_file=$OUT_DIR/dndscv-results.rds
+          --in_file=$MUTATIONS \
+          --metadata=$METADATA \
+          --ref=$DNDSCV_REF \
+          --cov=$DNDSCV_COV \
+          --out_file=$OUT_DIR/dndscv-results.rds
   
 
 
@@ -89,16 +89,16 @@ DEDUP='all'
 
 ## Build allow list 
 Rscript $SRCDIR/init-eligible-regions.r \
-  --chr_len=$CHR_LEN \
-  --mappability=$MAPPABILITY \
-  --block=$JABBA_BLOCK_LIST \
-  --out_file=$FISHHOOK_DIR/GRCh38-eligible-regions.bed
+          --chr_len=$CHR_LEN \
+          --mappability=$MAPPABILITY \
+          --block=$JABBA_BLOCK_LIST \
+          --out_file=$FISHHOOK_DIR/GRCh38-eligible-regions.bed
 
 ## Merge jabba junctions into a single file 
 Rscript $SRCDIR/merge-jabba-junctions.r \
-  --in_dir=$JABBA_DIR \
-  --tn=$TNFILE \
-  --out_file=$FISHHOOK_DIR/jabba-junctions.txt
+          --in_dir=$JABBA_DIR \
+          --tn=$TNFILE \
+          --out_file=$FISHHOOK_DIR/jabba-junctions.txt
 
 
 ## Assemble covariates
@@ -121,14 +121,14 @@ fi
 
 ## Run FishHook
 Rscript $SRCDIR/run-fishhook.r \
-            --in_file=$FISHHOOK_DIR/jabba-junctions.txt \
-            --chr_len=$CHR_LEN \
-            --eligible=$FISHHOOK_DIR/GRCh38-eligible-regions.bed \
-            --bin_size=$BIN_SIZE \
-            --step_size=$BIN_SIZE \
-            --one_patient_per_locus=$dedup_flag \
-            --covariate_dir=$FISHHOOK_DIR/resources \
-            --out_file=$FISHHOOK_DIR/fishhook-result.$BIN_SIZE.$dedup.rds
+          --in_file=$FISHHOOK_DIR/jabba-junctions.txt \
+          --chr_len=$CHR_LEN \
+          --eligible=$FISHHOOK_DIR/GRCh38-eligible-regions.bed \
+          --bin_size=$BIN_SIZE \
+          --step_size=$BIN_SIZE \
+          --one_patient_per_locus=$dedup_flag \
+          --covariate_dir=$FISHHOOK_DIR/resources \
+          --out_file=$FISHHOOK_DIR/fishhook-result.$BIN_SIZE.$dedup.rds
 
 
 
@@ -139,19 +139,19 @@ out_file_2=$FISHHOOK_DIR/fishhook-result.$BIN_SIZE.$dedup.annotated.dispersion.t
 out_file_bed=$FISHHOOK_DIR/fishhook-hits.$BIN_SIZE.$dedup.bed
 
 Rscript $SRCDIR/annotate-fishhook-results.r \
-    --in_file=$in_file \
-    --genes=$CGC \
-    --cytoband=$CYTOBAND \
-    --fdr=$FDR \
-    --out_file=$out_file_1
+          --in_file=$in_file \
+          --genes=$CGC \
+          --cytoband=$CYTOBAND \
+          --fdr=$FDR \
+          --out_file=$out_file_1
 
 Rscript $SRCDIR/init-dispersion-score.r \
-    --in_file=$out_file_1 \
-    --junctions=$WORKING_DIR/jabba-junctions.txt \
-    --one_patient_per_locus=$dedup_flag \
-    --out_file=$out_file_2
+          --in_file=$out_file_1 \
+          --junctions=$WORKING_DIR/jabba-junctions.txt \
+          --one_patient_per_locus=$dedup_flag \
+          --out_file=$out_file_2
 
 Rscript $SRCDIR/init-export-srb-to-bed.r \
-    --in_file=$out_file_2 \
-    --fdr=$FDR \
-    --out_file=$out_file_bed
+          --in_file=$out_file_2 \
+          --fdr=$FDR \
+          --out_file=$out_file_bed

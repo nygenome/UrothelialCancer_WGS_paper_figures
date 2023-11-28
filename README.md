@@ -33,6 +33,7 @@ This repository contains the code necessary for reproducing the figures and cust
     * GenomicRanges
     * skitools
     * bamUtils
+    * BSgenome.Hsapiens.UCSC.hg38
 
 * The following packages
     * bedtools

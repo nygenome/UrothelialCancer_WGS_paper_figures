@@ -16,7 +16,8 @@
 ################################################################################
 
 
-## This bash script contains scripts used to generate JaBbA CNV/SV calls 
+## This bash script contains scripts used to generate JaBbA CNV/SV calls, 
+## followed by some postprocessing and AmpliconArchitect 
 ## Note: The steps prior to postprocessing require a Slurm cluster environment
 set -euo pipefail
 SRCDIR=$(realpath $(dirname $0))
@@ -62,7 +63,7 @@ bash $SRCDIR/jabba/calling.sh $SRCDIR/jabba_config.txt
 ####################
 
 ## Get genes overlapping with events
-while read tumor normal gender; do
+while read tumor normal gender patient; do
     
     tn=$tumor--$normal
 
@@ -78,7 +79,7 @@ done < $TNFILE
 
 
 ## Generate gene-level copy number profiles
-while read tumor normal gender; do
+while read tumor normal gender patient; do
 
     tn=$tumor--$normal
     bed=$JABBA_DIR/jabba/$tn/jabba.simple.cnv.bed
@@ -90,3 +91,10 @@ while read tumor normal gender; do
                 --out_file=$out_file
 
 done < $TNFILE
+
+
+#######################
+## AmpliconArchitect ##
+#######################
+
+## TC: AA preprocessing and run steps

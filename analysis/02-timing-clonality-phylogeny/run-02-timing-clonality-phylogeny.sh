@@ -28,7 +28,7 @@ WORKING_DIR=
 ## Joint calling ##
 ###################
 
-
+## TC: joint calling workflow 
 
 
 
@@ -36,13 +36,15 @@ WORKING_DIR=
 ## Build phylogenetic trees ##
 ##############################
 
+## TC: lichee workflow 
+
 
 
 #####################
 ## Mutation timing ##
 #####################
 
-while read tumor normal gender; do
+while read tumor normal gender patient; do
 
     tn=$tumor--$normal
 

@@ -34,9 +34,10 @@ SBS_REF=
 #####################
 ## deconstructSigs ##
 #####################
-
-## TC: deconstructSigs workflow 
-
+./SigMatrixGen.py -o $project -r GRCh38 -i $DECONSTRUCTSIGS_DIR
+./run_deconstructSigs.R -d $DECONSTRUCTSIGS_DIR --highconf -o $output_sbs -v v3.2
+./run_deconstructSigs_DBS.R -d $DECONSTRUCTSIGS_DIR --highconf -o $output_dbs -v v3.2
+./run_deconstructSigs_ID.R -i $DECONSTRUCTSIGS_DIR/output/ID/$project.ID83.all -o $output_id -v 3.2
 
 ######################################
 ## Signature assignment + filtering ##
@@ -128,17 +129,15 @@ done < <(grep -v '^#' $TNFILE | cut -f4 | sort -u)
 done < $TNFILE
 
 
-
-#########################
-## Mutational velocity ##
-#########################
-
-## TC: mutational velocity workflow 
-
-
-
 ################################
 ## Normal urothelium analysis ##
 ################################
 
-## TC: normal urothelium pileup workflow 
+#get variant positions for SBS2 and SBS13 in tumor
+./get_tumor_pos_vafs.py -i $input_vcf -o $output_tumor_pos -t $tumor -n $normal
+#generate allele counts for variants at tumor positions in benign urothelium
+./allele_counts.sh $output_tumor_pos $tumor_bam $tumor $output_allele_count $GRCh38_ref
+#calculate vaf of tumor positions in benign urothelium
+./calc_vaf.py -i $output_allele_count -o $output_vaf -p $output_tumor_pos 
+#filter for variants with VAF > 0.0
+grep -v "0\.0$" $output_vaf > $output_vaf_filtered

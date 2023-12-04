@@ -27,18 +27,15 @@ WORKING_DIR=
 ###################
 ## Joint calling ##
 ###################
+bcftools merge --force-samples *.vcf | bcftools filter -i INFO/HighConfidence=1 -o $union_vcf
 
-## TC: joint calling workflow 
-
-
-
-##############################
-## Build phylogenetic trees ##
-##############################
-
-## TC: lichee workflow 
-
-
+while read tumor normal; do 
+    python get_vaf.py -t ${tumor}.final.bam \
+    -n ${normal}.final.bam \
+    --tumor $tumor \
+    --normal $normal \
+    -v $vcf -u $union_vcf -o ${tumor}--${normal}.highconf.union.vcf
+done < TNFILE
 
 #####################
 ## Mutation timing ##
@@ -98,3 +95,20 @@ while read tumor normal gender patient; do
     --out_file_pdf=$out_file_png
 
 done < $TNFILE
+
+##############################
+## Build phylogenetic trees ##
+##############################
+
+#jabba CCF vcfs
+bcftools merge *.vcf.gz | bcftools query -H -f '%CHROM\t%POS\t%REF:%ALT:%INFO/CSQ\t[%CCF\t]\n' > $patient.merge.ccf.txt
+awk -F $'\t' 'BEGIN {OFS = FS} $3 = $3 FS "0.0"' PM63.merge.ccf.txt | sed 's/\.\t/0.0\t/g' | sed '1s/0.0/Normal/' | sed '1s/\[.\{1,2\}\]//g'> $patient.lichee.input.txt
+
+./lichee.sh -build \
+    -i $patient.lichee.input.txt \
+    -dot \
+    -cp \
+    --minVAFPresent 0.05 \
+    --maxVAFAbsent 0.0 \
+    -n 0  \
+    -o $output_lichee

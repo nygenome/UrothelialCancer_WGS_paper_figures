@@ -31,10 +31,7 @@ SIG_ASSIGNMENT_DIR=
 #########################
 ## SigProfilerClusters ##
 #########################
-
-## TC: add sigprofilerclusters workflow 
-
-
+python run_Sigprofiler_SimClusters_vaf.py $project $SIGPROFILER_DIR
 
 ####################
 ## Postprocessing ##

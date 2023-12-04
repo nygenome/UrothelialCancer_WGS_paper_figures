@@ -97,4 +97,15 @@ done < $TNFILE
 ## AmpliconArchitect ##
 #######################
 
-## TC: AA preprocessing and run steps
+while read tumor normal; do 
+    AmpliconSuite-pipeline.py -o outputs/${tumor}--${normal}/ \
+    -s ${tumor}--${normal} \
+    -t 4 \
+    --cnv_bed bed/${tumor}--${normal}.jabba.bed \
+    --bam bam/${tumor}.bam \
+    --run_AA \
+    --run_AC \
+    --cngain 4 \
+    --cnsize_min 10000 \
+    --downsample 10
+done < $TNFILE

@@ -35,9 +35,9 @@ SBS_REF=
 ## deconstructSigs ##
 #####################
 ./SigMatrixGen.py -o $project -r GRCh38 -i $DECONSTRUCTSIGS_DIR
-./run_deconstructSigs.R -d $DECONSTRUCTSIGS_DIR --highconf -o $output_sbs -v v3.2
-./run_deconstructSigs_DBS.R -d $DECONSTRUCTSIGS_DIR --highconf -o $output_dbs -v v3.2
-./run_deconstructSigs_ID.R -i $DECONSTRUCTSIGS_DIR/output/ID/$project.ID83.all -o $output_id -v 3.2
+Rscript run_deconstructSigs.R -d $DECONSTRUCTSIGS_DIR --highconf -o $output_sbs -v v3.2
+Rscript run_deconstructSigs_DBS.R -d $DECONSTRUCTSIGS_DIR --highconf -o $output_dbs -v v3.2
+Rscript run_deconstructSigs_ID.R -i $DECONSTRUCTSIGS_DIR/output/ID/$project.ID83.all -o $output_id -v 3.2
 
 ######################################
 ## Signature assignment + filtering ##

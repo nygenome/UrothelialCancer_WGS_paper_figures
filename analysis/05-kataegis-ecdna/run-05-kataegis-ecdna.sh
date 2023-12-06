@@ -160,5 +160,5 @@ Rscript $SRCDIR/extract-ecdna-mutations-by-vaf.r \
 
 
 ## TC: deconstructSigs for the ecDNA mutations
-
+Rscript run_deconstructSigs_ecDNA.R -d $VAF_DIR --highconf -o $output_sbs
 

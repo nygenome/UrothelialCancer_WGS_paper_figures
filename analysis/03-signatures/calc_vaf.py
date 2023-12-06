@@ -1,9 +1,19 @@
 #!/nfs/sw/python/python-2.7.8/bin/python
+################################################################################
+### COPYRIGHT ##################################################################
 
-########################################
-# Minita Shah (mshah@nygenome.org)
 # New York Genome Center
-########################################
+
+# SOFTWARE COPYRIGHT NOTICE AGREEMENT
+# This software and its documentation are copyright (2023) by the New York
+# Genome Center. All rights are reserved. This software is supplied without
+# any warranty or guaranteed support whatsoever. The New York Genome Center
+# cannot be responsible for its use, misuse, or functionality.
+
+# Author: Minita Shah
+
+################################################################# /COPYRIGHT ###
+################################################################################
 
 import os
 import sys

@@ -35,7 +35,9 @@ This repository contains the code necessary for reproducing the figures and cust
     * bamUtils
     * BSgenome.Hsapiens.UCSC.hg38
 
-* The following packages
+* Other utilities:
     * bedtools
     * samtools
+    * LICHeE
+    * AmpliconArchitect/AmpliconClassifier
  

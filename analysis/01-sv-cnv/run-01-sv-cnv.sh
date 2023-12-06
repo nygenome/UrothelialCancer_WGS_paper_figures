@@ -22,13 +22,6 @@
 set -euo pipefail
 SRCDIR=$(realpath $(dirname $0))
 
-## Dirs
-JABBA_DIR=/path/to/jabba/output/dir
-
-## Files 
-TNFILE=tumor_normal_pairs.jabba_analysis.txt
-GENE_BED=/gpfs/commons/resources/GRCh38_full_analysis_set_plus_decoy_hla/internal/ensembl_genes_unique_sorted.final.v93.short.chr.sorted.bed
-
 
 
 ###################
@@ -93,19 +86,25 @@ while read tumor normal gender patient; do
 done < $TNFILE
 
 
+
 #######################
 ## AmpliconArchitect ##
 #######################
 
 while read tumor normal; do 
-    AmpliconSuite-pipeline.py -o outputs/${tumor}--${normal}/ \
-    -s ${tumor}--${normal} \
+
+    tn=$tumor--$normal
+
+    $AA_REPO/AmpliconSuite-pipeline.py \
+    -o outputs/$tn/ \
+    -s $tn \
     -t 4 \
-    --cnv_bed bed/${tumor}--${normal}.jabba.bed \
-    --bam bam/${tumor}.bam \
+    --cnv_bed $JABBA_DIR/jabba/$tn/jabba.simple.cnv.bed \
+    --bam $PROJECT_DIR/Sample_$tumor/analysis/$tumor.final.bam \
     --run_AA \
     --run_AC \
     --cngain 4 \
     --cnsize_min 10000 \
     --downsample 10
+
 done < $TNFILE

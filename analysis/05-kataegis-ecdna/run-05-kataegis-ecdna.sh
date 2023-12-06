@@ -19,19 +19,13 @@
 ## then identify kyklonas
 
 
-## Dirs 
-SIGPROFILER_DIR=
-SIG_ASSIGNMENT_DIR=
-
-## Files 
-
-
-
 
 #########################
 ## SigProfilerClusters ##
 #########################
 python run_Sigprofiler_SimClusters_vaf.py $project $SIGPROFILER_DIR
+
+
 
 ####################
 ## Postprocessing ##

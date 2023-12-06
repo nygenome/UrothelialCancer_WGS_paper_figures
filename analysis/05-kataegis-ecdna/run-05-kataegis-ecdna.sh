@@ -10,7 +10,7 @@
 # any warranty or guaranteed support whatsoever. The New York Genome Center
 # cannot be responsible for its use, misuse, or functionality.
 
-# Author: William F. Hooper
+# Author: William F. Hooper & Timothy R. Chu 
 
 ################################################################# /COPYRIGHT ###
 ################################################################################
@@ -159,6 +159,5 @@ Rscript $SRCDIR/extract-ecdna-mutations-by-vaf.r \
             --out_dir=$VAF_DIR
 
 
-## TC: deconstructSigs for the ecDNA mutations
-Rscript run_deconstructSigs_ecDNA.R -d $VAF_DIR --highconf -o $output_sbs
-
+## Run deconstructSigs for the ecDNA mutations split by VAF
+Rscript $SRCDIR//run_deconstructSigs_ecDNA.r -d $VAF_DIR --highconf -o $output_sbs

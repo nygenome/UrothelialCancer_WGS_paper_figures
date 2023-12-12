@@ -18,17 +18,8 @@
 ## Compute signatures via deconstructSigs from joint-called SNV/INDELs
 ## Probabilistically assign signatures to individual mutations, incorporating 
 ## some knowledge-based filtering 
-
-## Dirs
-DECONSTRUCTSIGS_DIR=
-MUTATIONTIMER_DIR= 
-SIG_ASSIGN_DIR= 
-TCGA_DIR=
-
-## Files 
-METADATA=
-TCGA_MANIFEST=
-SBS_REF=
+set -euo pipefail
+SRCDIR=$(realpath $(dirname $0))
 
 
 #####################

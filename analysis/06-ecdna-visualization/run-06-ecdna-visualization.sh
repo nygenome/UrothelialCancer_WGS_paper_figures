@@ -16,10 +16,8 @@
 ################################################################################
 
 ## Attempt to harmonize JaBbA and AA calls for the purposes of visualization
-
-## Dirs 
-
-## Files 
+set -euo pipefail
+SRCDIR=$(realpath $(dirname $0))
 
 
 ## Collapse AA results

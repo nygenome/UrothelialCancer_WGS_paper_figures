@@ -16,22 +16,8 @@
 ################################################################################
 
 ## Run dndscv (SNV/INDEL) and FishHook (SV) to look for evidence of positive selection
-
-## Dirs 
-JABBA_DIR= 
-ENCODE_DIR=
-DNDSCV_DIR=
-FISHHOOK_DIR=
-
-## Files 
-TNFILE=
-CHR_LEN=
-JABBA_BLOCK_LIST=
-REPLICATION_TIMING=
-FRAGILE_SITES=
-CYTOBAND=
-REPEATMASKER=
-CGC=
+set -euo pipefail
+SRCDIR=$(realpath $(dirname $0))
 
 
 

@@ -17,7 +17,8 @@
 
 ## Use "pileup method" for joint calling, use that to get mutation timing 
 ## and phylogenetic trees 
-
+set -euo pipefail
+SRCDIR=$(realpath $(dirname $0))
 
 
 ###################

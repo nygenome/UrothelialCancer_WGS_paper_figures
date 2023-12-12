@@ -23,7 +23,6 @@ set -euo pipefail
 SRCDIR=$(realpath $(dirname $0))
 
 
-
 ###################
 ## Preprocessing ##
 ###################

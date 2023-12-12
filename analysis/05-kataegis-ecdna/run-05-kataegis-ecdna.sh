@@ -17,7 +17,8 @@
 
 ## Identify kataegis via SigProfilerClusters, nominate ecDNAs using JaBbA/AA data, 
 ## then identify kyklonas
-
+set -euo pipefail
+SRCDIR=$(realpath $(dirname $0))
 
 
 #########################

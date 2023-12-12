@@ -40,4 +40,6 @@ This repository contains the code necessary for reproducing the figures and cust
     * samtools
     * LICHeE
     * AmpliconArchitect/AmpliconClassifier
+    * minimap2
+    * flye
  

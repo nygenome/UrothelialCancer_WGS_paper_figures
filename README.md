@@ -2,7 +2,8 @@
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 This repository contains the code necessary for reproducing the figures and custom analysis in the following manuscript:  
-[The Interplay between Mutagenesis and Extrachromosomal DNA Shapes Urothelial Cancer Evolution](https://www.biorxiv.org/content/10.1101/2023.05.07.538753v1)
+Nguyen, D.D., Hooper, W.F., Liu, W. et al. The interplay of mutagenesis and ecDNA shapes urothelial cancer evolution. Nature 635, 219–228 (2024).   
+https://doi.org/10.1038/s41586-024-07955-3
 
 ## Dependencies
 * R 4.0.0 or greater
